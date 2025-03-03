@@ -1,0 +1,469 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Feb 17, 2025, 11:46:49 AM
+    Author     : datho
+*/
+
+/* Container styling */
+.car-search {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 1rem;
+    margin: 1.5rem auto;
+    padding: 0 1rem;
+    max-width: 1200px;
+}
+
+/* Custom select container */
+.custom-select {
+    position: relative;
+    width: 200px;
+    font-family: inherit;
+}
+
+/* Selected option styling */
+.select-selected {
+    position: relative;
+    background-color: var(--color-white);
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-dark);
+    border-radius: var(--border-radius-1);
+    cursor: pointer;
+    user-select: none;
+    color: var(--color-dark);
+    transition: all 0.35s ease;
+    font-size: 0.875rem;
+    line-height: 1.25;
+}
+
+/* Arrow indicator */
+.select-selected:after{
+    content: "";
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid var(--color-dark);
+    transition: transform 0.35s ease;
+}
+
+.select-selected.active:after{
+    transform: translateY(-50%) rotate(180deg);
+}
+
+.select-selected:hover {
+    border-color: var(--primary-color);
+    background-color: var(--hover-background);
+}
+
+.select-selected:hover {
+    border-color: var(--color-primary);
+    background-color: var(--color-light);
+}
+
+.custom-select:focus-within .select-selected {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+    outline: none;
+}
+
+/* Dropdown menu */
+.select-items {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background-color: var(--color-white);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-1);
+    box-shadow: var(--box-shadow);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color:#888 #f1f1f1;
+    max-height: 250px;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.35s ease;
+}
+
+.select-items::-webkit-scrollbar {
+    width: 8px; /* Width of the scrollbar */
+}
+
+
+.select-items::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Light gray background */
+    border-radius: 10px;
+}
+
+
+.select-items::-webkit-scrollbar-thumb {
+    background: #888; /* Darker gray scrollbar handle */
+    border-radius: 10px;
+}
+
+
+.select-items::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Even darker when hovered */
+}
+
+/* Show dropdown */
+.select-items.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Dropdown options */
+.select-item {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    user-select: none;
+    color: var(--color-dark);
+    transition: background-color 0.35s ease;
+    font-size: 0.875rem;
+    line-height: 1.25;
+}
+
+.select-item:hover{
+    background-color: var(--color-light);
+}
+
+.select-item.selected {
+    background-color: rgba(74, 144, 226, 0.1);
+    font-weight: 500;
+}
+
+main .recent-orders{
+    margin-top: 1.3rem;
+}
+
+main .recent-orders h2{
+    margin-bottom: 0.8rem;
+}
+
+main .recent-orders table{
+    margin-top: 5rem;
+    background-color: var(--color-white);
+    width: 100%;
+    padding: var(--card-padding);
+    text-align: center;
+    box-shadow: var(--box-shadow);
+    border-radius: var(--card-border-radius);
+    transition: all 0.3s ease;
+}
+
+main .recent-orders table:hover{
+    box-shadow: none;
+}
+
+main table tbody td{
+    height: 2.8rem;
+    border-bottom: 1px solid var(--color-light);
+    color: var(--color-dark-variant);
+}
+
+main table tbody tr:hover{
+    background-color: var(--color-background);
+    cursor: pointer;
+    
+}
+main table tbody tr:last-child td{
+    border: none;
+}
+
+main .recent-orders a{
+    text-align: center;
+    display: block;
+    margin: 1rem auto;
+    color: var(--color-primary);
+}
+
+main table tbody td.action-icons .icon-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+main table tbody td.action-icons .icon-container .material-symbols-outlined {
+    font-size: 1.2rem;
+}
+
+main table tbody td.action-icons .icon-container .edit{
+    padding: 0.6rem;
+    color: var(--color-white);
+    background-color: var(--color-success);
+    border-radius: 20%;
+    display: flex;
+}
+
+main table tbody td.action-icons .icon-container .view{
+    padding: 0.6rem;
+    color: var(--color-white);
+    background-color: var(--color-primary);
+    border-radius: 20%;
+    display: flex;
+}
+
+main table tbody td.action-icons .icon-container .delete{
+    padding: 0.6rem;
+    color: var(--color-white);
+    background-color: var(--color-danger);
+    border-radius: 20%;
+    display: flex;
+}
+
+main table tbody td.action-icons .icon-container .icon:hover{
+    cursor: pointer;
+    padding-top: 0.7rem;
+    color: var(--color-info-dark);
+}
+
+main .recent-orders a:hover{
+    color: var(--color-warning);
+    
+}
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.input {
+    width: 10%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-border, #eaeaea);
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input:focus {
+    outline: none;
+    border-color: var(--color-primary, #4a90e2);
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+}
+.type-car{
+    margin-top: 1rem;
+}
+
+.modal-background{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    opacity: 0;
+    visibility: hidden;
+    background: var(--color-light);
+    transition: 0.5s;
+}
+
+body.open .modal-background{
+    visibility: visible;
+    opacity: 1;
+    animation: background-in 1s both;
+}
+
+.modal{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    background: var(--color-info-dark);
+    color: #f9f9f9;
+    padding: 48px 40px;
+    border-radius: 12px;
+    width: 80%;
+    height: 80%;
+    translate: -50% -50%;
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.7);
+    transition: 0.3s;
+}
+
+body.open .modal{
+    opacity: 1;
+    visibility: visible;
+    animation: modal-in 1s;
+}
+
+body.closed .modal{
+    opacity: 0;
+    visibility: hidden;
+    translate: -50% -50%;
+}
+
+h2{
+    margin:  0 0 8px;
+    font-weight: 400;
+    font-size: 21px;
+}
+
+p{
+    margin: 0;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+@keyframes background-in{
+    0%{
+        scale: 0 0.005;
+    }
+    33%{
+        scale: 1 0.005;
+    }
+    66%, 100%{
+        scale: 1 1;
+    }
+}
+
+@keyframes modal-in{
+    0%, 66%{
+        opacity: 0;
+        visibility: hidden;
+        translate: -50% -30%;
+    }
+    100%{
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
+.modal-content {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.detail-item {
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+}
+
+.detail-label {
+    display: block;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 0.5rem;
+}
+
+.detail-value {
+    margin: 0;
+    font-weight: 500;
+    color: #fff;
+    font-size: 1rem;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.close-btn:hover {
+    color: var(--color-primary);
+}
+
+.status-badge {
+    background: var(--color-success);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 1.2rem;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.btn {
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    border: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.btn-update {
+    background-color: var(--color-primary);
+    color: white;
+}
+
+.btn-update:hover {
+    background-color: #25CC89;
+}
+
+.btn-delete {
+    background-color: var(--color-warning);
+    color: white;
+}
+
+.btn-delete:hover {
+    background-color: #E63E3E;
+}
+
+
+.btn .material-symbols-outlined {
+    font-size: 20px;
+}
+.reminders .add-reminder{
+    margin-top: 1rem;
+    background-color: var(--color-white);
+    border:  dashed var(--color-primary);
+    border-radius: var(--border-radius-1);
+    color: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 20%;
+    cursor: pointer;
+}
+
+.reminders .add-reminder:hover{
+    background-color: var(--color-primary);
+    color: white;
+}
+
+.reminders .add-reminder div{
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
