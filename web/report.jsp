@@ -17,9 +17,9 @@
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/report.css"/>
     </head>
     <body>
-         <%
+        <%
             String loginpage = "login.jsp";
-            if(session.getAttribute("SALEPERSON") == null){
+            if (session.getAttribute("SALEPERSON") == null) {
                 response.sendRedirect(loginpage);
             }
         %>
@@ -74,7 +74,7 @@
                                         <div>
                                             <h5>${mechanic.name}</h5>
                                             <p>Number of repairs: ${mechanic.totalRepair}</p>
-                                            <p>Revenue: $${(mechanic.revenue)/100}</p>
+                                           <p>Revenue: ${String.format("%.2f", (mechanic.revenue))}</p>
                                         </div>
                                         <i class='bx bxs-car-mechanic'></i>
                                     </div>
@@ -85,7 +85,7 @@
                                     </div>
                                     <style>
                                         main .status .items-list .item:nth-child(${counter.count}) .progress::before {
-                                            content: "${(mechanic.hours) * 2}%";
+                                            content: "${(mechanic.hours)} hours";
                                         }
                                     </style>
                                 </div>
@@ -107,20 +107,19 @@
                             <div class="header">
                                 <h4>Revenue Per Year</h4>
                                 <div class="tabs">
-                                    <a href="#" class="active">1Y</a>
-                                    <a href="#">6M</a>
-                                    <a href="#">3M</a>
+                                    <a href="ProcessServlet?btnAction=Report&id=part" class="${param.id == 'part' ? 'active' : ''}">Revenue Of Part</a>
+                                    <a href="ProcessServlet?btnAction=Report&id=service" class="${param.id == 'service' ? 'active' : ''}">Revue Of Service</a>
                                 </div>
                             </div>
 
                             <div class="details">
                                 <div class="item">
-                                    <h2>100.90</h2>
+                                    <h2>${HighestRevenue}</h2>
                                     <p>Highest Revenue</p>
                                 </div>
                                 <div class="separator"></div>
                                 <div class="item">
-                                    <h2>60.80</h2>
+                                    <h2>${AverageRevenue}</h2>
                                     <p> Average Revenue</p>
                                 </div>
                             </div>

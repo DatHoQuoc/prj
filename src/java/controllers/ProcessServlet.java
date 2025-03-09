@@ -29,6 +29,9 @@ public class ProcessServlet extends HttpServlet {
     private final String updateCustomerServletTwo = "UpdateCustomerServletTwo";
     private final String createCarServlet = "CreateCarServlet";
     private final String deleteCarServlet = "DeleteCarServlet";
+    private final String updateCarServlet = "UpdateCarServlet";
+    private final String updateCarServletTwo = "UpdateCarServletTwo";
+    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
      * @param request servlet request
@@ -66,6 +69,10 @@ public class ProcessServlet extends HttpServlet {
                 url = createCarServlet;
             }else if(button.equals("DeleteCar")){
                 url = deleteCarServlet;
+            }else if(button.equals("UpdateCar")){
+                url = updateCarServlet;
+            }else if(button.equals("UpdateCarServletTwo")){
+                url = updateCarServletTwo;
             }
             
             RequestDispatcher rd = request.getRequestDispatcher(url);

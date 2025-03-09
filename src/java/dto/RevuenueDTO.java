@@ -4,44 +4,67 @@
  */
 package dto;
 
+import java.util.*;
+
 /**
  *
  * @author datho
  */
 public class RevuenueDTO {
-    private int year;
-    private double laborCost;
-    private double partsCost;
 
-    public RevuenueDTO(int year, double laborCost, double partsCost) {
-        this.year = year;
-        this.laborCost = laborCost;
-        this.partsCost = partsCost;
+    HashMap<Integer, ArrayList<Double>> revenue;
+
+    public RevuenueDTO() {
+        revenue = new HashMap<>();
     }
 
-    public int getYear() {
-        return year;
+    public HashMap<Integer, ArrayList<Double>> getRevenue() {
+        return revenue;
     }
 
-    public void setYear(int year) {
-        this.year = year;
+    public void setRevenue(HashMap<Integer, ArrayList<Double>> revenue) {
+        this.revenue = revenue;
     }
 
-    public double getLaborCost() {
-        return laborCost;
+    public void addRevenueEntry(int year, int month, double revenueAmount) {
+        if (!revenue.containsKey(year)) {
+            revenue.put(year, new ArrayList<>(12));
+            for (int i = 0; i < 12; i++) {
+                revenue.get(year).add(0.0);
+            }
+        }
+        revenue.get(year).set(month - 1, revenueAmount);
     }
 
-    public void setLaborCost(double laborCost) {
-        this.laborCost = laborCost;
+    public Double getRevenueForMoth(int year, int month) {
+        if (revenue.containsKey(year)) {
+            return revenue.get(year).get(month - 1);
+        }
+        return 0.0;
     }
 
-    public double getPartsCost() {
-        return partsCost;
-    }
+    public double[] getHighestAndAverageRevenue() {
+        double highest = 0.0;
+        double sum = 0.0;
+        int count = 0;
 
-    public void setPartsCost(double partsCost) {
-        this.partsCost = partsCost;
+        for (Map.Entry<Integer, ArrayList<Double>> entry : revenue.entrySet()) {
+          
+
+            for (Double monthRevenue : entry.getValue()) {
+
+                if (monthRevenue > 0.0) {
+                    if (monthRevenue > highest) {
+                        highest = monthRevenue;
+                    }
+                    sum += monthRevenue;
+                    count++;
+                }
+            }
+        }
+
+
+        double average = count > 0 ? sum / count : 0.0;
+        return new double[]{highest, average};
     }
-    
-    
 }

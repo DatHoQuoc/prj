@@ -4,6 +4,7 @@
  */
 package controllers;
 
+import dto.CustomerDTO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
@@ -57,10 +58,7 @@ public class UpdateCustomerServlet extends HttpServlet {
                 request.getRequestDispatcher("ProcessServlet?btnAction=Search").forward(request, response);
                 return;
             } else {
-                Long idNumber = Validation.parseLong(id);
-                Long phoneNumber = Validation.parseLong(phone);
-
-                Customer customer = new Customer(idNumber, name, phoneNumber, sex, address);
+                CustomerDTO customer = new CustomerDTO(id, name, phone, sex, address);
                 request.setAttribute("UPDATE", customer);
             }
             request.getRequestDispatcher(updateCustomerPage).forward(request, response);

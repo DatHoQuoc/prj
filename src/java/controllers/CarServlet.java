@@ -67,8 +67,10 @@ public class CarServlet extends HttpServlet {
             String[] a = {serial, model, year};
             
             ArrayList<Car> listOfCars = new ArrayList<>();
+            ArrayList<Long> listOfIds = new ArrayList<>();
             JsonBuilderFactory factory = Json.createBuilderFactory(null);
             String result = "";
+            String idResult = "";
             if(type.equals("sale")){
                 listOfCars = getDefaultListOfCars(salePerson.getSaleID());
                 result = convertCarListToJson(factory, listOfCars);
@@ -76,7 +78,9 @@ public class CarServlet extends HttpServlet {
                 listOfCars = getDefaultListOfCars();
                 result = convertCarListToJson(factory, listOfCars);
             }
-
+            listOfIds = getListOfIds();
+            idResult = convertIdListToJson(factory, listOfIds);
+           
             ArrayList<Car> filteredCars = filterCars(listOfCars, serial, model, year);
 
             ArrayList<String> availableSerials = getAvailableSerials(listOfCars, serial, model, year);
@@ -86,6 +90,7 @@ public class CarServlet extends HttpServlet {
             
             session.setAttribute("a", a);
             
+            request.setAttribute("idJson", idResult);
             request.setAttribute("carJson", result);
             request.setAttribute("cars", filteredCars);
             request.setAttribute("serialNumbers", availableSerials);
@@ -277,5 +282,22 @@ public class CarServlet extends HttpServlet {
         JsonArray array = arrayBuilder.build();
         String jsonString = array.toString();
         return jsonString;
+    }
+    
+    private String convertIdListToJson(JsonBuilderFactory factory,ArrayList<Long> list ){
+        JsonArrayBuilder arrayBuilder = factory.createArrayBuilder();
+        if(list!=null){
+            for (Long long1 : list) {
+                arrayBuilder.add(long1);
+            }
+        }
+        JsonArray array = arrayBuilder.build();
+        String jsonString = array.toString();
+        return jsonString;
+    }
+    private ArrayList<Long> getListOfIds(){
+        CarDAO dao = new CarDAO();
+        dao.selectListOfId();
+        return dao.getListOfIds();
     }
 }

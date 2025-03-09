@@ -9,6 +9,7 @@ import dto.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -53,6 +54,8 @@ public class ReportServlet extends HttpServlet {
                 response.sendRedirect(loginPage);
                 return;
             }
+            String id = Validation.normalize(request.getParameter("id"));
+            double[] resultOfRevenue = new double[2];
             HashMap<String, String> finalResult = new HashMap<>();
             JsonBuilderFactory factory = Json.createBuilderFactory(null);//safety thread
             //Begin saleCarByYears
@@ -77,8 +80,15 @@ public class ReportServlet extends HttpServlet {
 
             //End top 3 mechanic
             //begin revenue
-            String revenue = selectRevenue(factory, salePerson);
-            finalResult.put("revenue", revenue);
+            if (!id.isEmpty()) {
+                int endYear = Year.now().getValue();
+                int startYear = endYear - 5;
+                String revenue = selectRevenue(factory, startYear, endYear, id, resultOfRevenue);
+                finalResult.put("revenue", revenue);
+                System.out.println("result :" + resultOfRevenue[0]);
+                request.setAttribute("HighestRevenue", String.format("%.2f", resultOfRevenue[0]));
+                request.setAttribute("AverageRevenue", String.format("%.2f", resultOfRevenue[1]));
+            }
             //end revenue
 
             //set request
@@ -201,24 +211,42 @@ public class ReportServlet extends HttpServlet {
         return jsonString;
     }
 
-    private String selectRevenue(JsonBuilderFactory factory, SalePerson salePerson) {
+    private String selectRevenue(JsonBuilderFactory factory, int startYear, int endYear, String id, double[] results) {
         SaleInvoiceDAO dao = new SaleInvoiceDAO();
-        dao.selectRevenueList(salePerson.getSaleID());
-        ArrayList<RevuenueDTO> revenue = dao.getRevenueList();
+        RevuenueDTO dto = new RevuenueDTO();
+        if (id.equals("part")) {
+            dto = dao.selectRevenueList(startYear, endYear);
+        } else if (id.equals("service")) {
+            dto = dao.selectRevenueListOfService(startYear, endYear);
+        }
+        double[] highestAndAve = dto.getHighestAndAverageRevenue();
+        results[0] = highestAndAve[0];
+        results[1] = highestAndAve[1];
+        HashMap<Integer, ArrayList<Double>> revenueData = dto.getRevenue();
         JsonArrayBuilder arrayBuilder = factory.createArrayBuilder();
-        if (revenue != null) {
-            for (RevuenueDTO revuenueDTO : revenue) {
-                if (revuenueDTO != null) {
-                    JsonObjectBuilder object = factory.createObjectBuilder();
-                    object.add("year", revuenueDTO.getYear())
-                            .add("laborCost", revuenueDTO.getLaborCost())
-                            .add("partCost", revuenueDTO.getPartsCost());
-                    arrayBuilder.add(object);
+        if (revenueData != null && !revenueData.isEmpty()) {
+            for (Map.Entry<Integer, ArrayList<Double>> entry : revenueData.entrySet()) {
+                int year = entry.getKey();
+                ArrayList<Double> monthyRevenue = entry.getValue();
+
+                JsonObjectBuilder yearObject = factory.createObjectBuilder();
+                yearObject.add("label", "'" + year + "'");
+                JsonArrayBuilder dataArray = factory.createArrayBuilder();
+                for (int month = 1; month <= 12; month++) {
+                    if (month <= monthyRevenue.size()) {
+                        double revenue = monthyRevenue.get(month - 1);
+                        dataArray.add(revenue);
+                    } else {
+                        // Add 0 if no data for this month
+                        dataArray.add(0);
+                    }
                 }
+
+                yearObject.add("data", dataArray);
+                arrayBuilder.add(yearObject);
             }
         }
         JsonArray array = arrayBuilder.build();
-        String jsonString = array.toString();
-        return jsonString;
+        return array.toString();
     }
 }

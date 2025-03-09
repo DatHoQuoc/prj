@@ -196,20 +196,20 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.appendChild(confirmationOverlay);
     
     updateButton.addEventListener('click', function(event) {
-        event.preventDefault(); // Prevent form from submitting immediately
-        confirmationOverlay.style.display = 'flex'; // Show the confirmation dialog
+        event.preventDefault(); 
+        confirmationOverlay.style.display = 'flex';
     });
     
-    // Handle "Yes" button click
+    
     document.getElementById('confirm-yes').addEventListener('click', function() {
-        confirmationOverlay.style.display = 'none'; // Hide the dialog
+        confirmationOverlay.style.display = 'none'; 
         if (form) {
             form.submit();
-        } // Submit the form
+        } 
     });
     
-    // Handle "No" button click
+    
     document.getElementById('confirm-no').addEventListener('click', function() {
-        confirmationOverlay.style.display = 'none'; // Just hide the dialog without submitting
+        confirmationOverlay.style.display = 'none'; 
     });
 });

@@ -160,6 +160,11 @@
         <div id="carData" style="display: none;">
             ${carJson}
         </div>
+        <div id="carId" style="display: none;">
+            ${idJson}
+        </div>
+        <div id="successMessage" class="hidden">${SUCCESS}</div>
+        <div id="errorMessage" class="hidden">${ERROR}</div>
         <div class="modal-background js-popup-modal">
         </div>
         <script src="${pageContext.request.contextPath}/assets/js/script.js"></script>

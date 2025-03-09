@@ -4,8 +4,8 @@
  */
 package controllers;
 
-import dao.CustomerDAO;
-import dto.CustomerDTO;
+import dao.CarDAO;
+import dto.CarDTO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import models.Customer;
 import models.SalePerson;
 import mylib.Validation;
 
@@ -22,11 +21,11 @@ import mylib.Validation;
  *
  * @author datho
  */
-@WebServlet(name = "UpdateCustomerServletTwo", urlPatterns = {"/UpdateCustomerServletTwo"})
-public class UpdateCustomerServletTwo extends HttpServlet {
+@WebServlet(name = "UpdateCarServletTwo", urlPatterns = {"/UpdateCarServletTwo"})
+public class UpdateCarServletTwo extends HttpServlet {
 
     private final String loginPage = "login.jsp";
-    private final String updateCustomerPage = "updateCustomer.jsp";
+    private final String updateCarPage = "updateCar.jsp";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -49,41 +48,18 @@ public class UpdateCustomerServletTwo extends HttpServlet {
                 response.sendRedirect(loginPage);
                 return;
             }
-            String id = Validation.normalize(request.getParameter("id"));
-            String name = Validation.normalize(request.getParameter("fullName"));
-            String phone = Validation.normalize(request.getParameter("phone"));
-            String address = Validation.normalize(request.getParameter("address"));
-            String sex = Validation.normalize(request.getParameter("customerGender"));
-            String gender = sex.equals("male") ? "M" : "F";
-            CustomerDTO customer = new CustomerDTO(id, name, phone, gender, address);
-            boolean isValidName = Validation.isValidFullName(name);
-            boolean isValidPhone = Validation.isValidPhoneNumber(phone);
-            String[] error = new String[3];
-            int errorCount = 0;
-
-            if (isValidName && isValidPhone) {
-                Long phoneNumber = Validation.parseLong(phone);
-                Long idNumber = Validation.parseLong(id);
-                if (isExistCustomer(idNumber, name, phoneNumber)) {
-                    request.setAttribute("ERROR", "Another customer with this name and phone already exists");
-                } else {
-                    
-                    updateCustomer(request, idNumber, name, phoneNumber, address, gender);
-                }
+            String id = Validation.normalize(request.getParameter("carId"));
+            String serial = Validation.normalize(request.getParameter("carSerial"));
+            String model = Validation.normalize(request.getParameter("carModel"));
+            String year = Validation.normalize(request.getParameter("carYear"));
+            String color = Validation.normalize(request.getParameter("carColor"));
+            CarDTO dto = new CarDTO(id, serial, model, year, color);
+            if(!year.isEmpty()){
+                updateCar(request, id, color, year);
             }
-            if (!Validation.isValidPhoneNumber(phone)) {
-                error[errorCount] = "The phone number is from 10 to 15 digits";
-                errorCount++;
-            }
-            if (!Validation.isValidFullName(name)) {
-                error[errorCount] = "Please enter the full name";
-                errorCount++;
-            }
-            if (errorCount > 0) {
-                request.setAttribute("ERRORS", error);
-            }
-            request.setAttribute("UPDATE", customer);
-            request.getRequestDispatcher(updateCustomerPage).forward(request, response);
+            
+            request.setAttribute("UPDATE", dto);
+            request.getRequestDispatcher(updateCarPage).forward(request, response);
         }
     }
 
@@ -125,24 +101,13 @@ public class UpdateCustomerServletTwo extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
-    private void updateCustomer(HttpServletRequest request, long id, String name, long phone, String address, String gender) {
-        CustomerDAO dao = new CustomerDAO();
-        boolean success = dao.updateCustomer(id, name, phone, address, gender);
-        if (success) {
+    private void updateCar(HttpServletRequest request, String id, String color, String year){
+        CarDAO dao = new CarDAO();
+        boolean succes = dao.updateCar(id, color, year);
+        if(succes){
             request.setAttribute("SUCCESS", "Update Successfully");
-        } else {
+        }else{
             request.setAttribute("ERROR", "Update Fail");
         }
-    }
-
-    private boolean isExistCustomer(Long idNumber, String name, long phoneNumber) {
-        if (idNumber == null) {
-            return false;
-        }
-        CustomerDAO dao = new CustomerDAO();
-        Long idCheck = dao.selectCustomerID(name, phoneNumber);
-
-        return idCheck != null && !idCheck.equals(idNumber);
     }
 }

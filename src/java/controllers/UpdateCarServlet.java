@@ -4,17 +4,19 @@
  */
 package controllers;
 
-import dao.CustomerDAO;
-import dto.CustomerDTO;
+import dao.CarDAO;
+import dto.CarDTO;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.HashSet;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import models.Customer;
+import models.Car;
 import models.SalePerson;
 import mylib.Validation;
 
@@ -22,11 +24,11 @@ import mylib.Validation;
  *
  * @author datho
  */
-@WebServlet(name = "UpdateCustomerServletTwo", urlPatterns = {"/UpdateCustomerServletTwo"})
-public class UpdateCustomerServletTwo extends HttpServlet {
+@WebServlet(name = "UpdateCarServlet", urlPatterns = {"/UpdateCarServlet"})
+public class UpdateCarServlet extends HttpServlet {
 
     private final String loginPage = "login.jsp";
-    private final String updateCustomerPage = "updateCustomer.jsp";
+    private final String updateCarPage = "updateCar.jsp";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -49,41 +51,24 @@ public class UpdateCustomerServletTwo extends HttpServlet {
                 response.sendRedirect(loginPage);
                 return;
             }
-            String id = Validation.normalize(request.getParameter("id"));
-            String name = Validation.normalize(request.getParameter("fullName"));
-            String phone = Validation.normalize(request.getParameter("phone"));
-            String address = Validation.normalize(request.getParameter("address"));
-            String sex = Validation.normalize(request.getParameter("customerGender"));
-            String gender = sex.equals("male") ? "M" : "F";
-            CustomerDTO customer = new CustomerDTO(id, name, phone, gender, address);
-            boolean isValidName = Validation.isValidFullName(name);
-            boolean isValidPhone = Validation.isValidPhoneNumber(phone);
-            String[] error = new String[3];
-            int errorCount = 0;
-
-            if (isValidName && isValidPhone) {
-                Long phoneNumber = Validation.parseLong(phone);
-                Long idNumber = Validation.parseLong(id);
-                if (isExistCustomer(idNumber, name, phoneNumber)) {
-                    request.setAttribute("ERROR", "Another customer with this name and phone already exists");
-                } else {
-                    
-                    updateCustomer(request, idNumber, name, phoneNumber, address, gender);
-                }
+            String id = Validation.normalize(request.getParameter("carId"));
+            String serial = Validation.normalize(request.getParameter("carSerial"));
+            String model = Validation.normalize(request.getParameter("carModel"));
+            String year = Validation.normalize(request.getParameter("carYear"));
+            String color = Validation.normalize(request.getParameter("carColor"));
+            if (id.isEmpty() || year.isEmpty()) {
+                request.getRequestDispatcher("ProcessServlet?btnAction=Search").forward(request, response);
+                return;
+            } else {
+                CarDTO car = new CarDTO(id, serial, model, year, color);
+                ArrayList<Car> listOfCars = getDefaultListOfCars();
+                HashSet<String> listsOfColors = getListOfColors(listOfCars);
+                HashSet<Integer> listOfYears = getListOfyear(listOfCars);
+                request.setAttribute("years", listOfYears);
+                request.setAttribute("colors", listsOfColors);
+                request.setAttribute("UPDATE", car);
             }
-            if (!Validation.isValidPhoneNumber(phone)) {
-                error[errorCount] = "The phone number is from 10 to 15 digits";
-                errorCount++;
-            }
-            if (!Validation.isValidFullName(name)) {
-                error[errorCount] = "Please enter the full name";
-                errorCount++;
-            }
-            if (errorCount > 0) {
-                request.setAttribute("ERRORS", error);
-            }
-            request.setAttribute("UPDATE", customer);
-            request.getRequestDispatcher(updateCustomerPage).forward(request, response);
+            request.getRequestDispatcher(updateCarPage).forward(request, response);
         }
     }
 
@@ -126,23 +111,33 @@ public class UpdateCustomerServletTwo extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private void updateCustomer(HttpServletRequest request, long id, String name, long phone, String address, String gender) {
-        CustomerDAO dao = new CustomerDAO();
-        boolean success = dao.updateCustomer(id, name, phone, address, gender);
-        if (success) {
-            request.setAttribute("SUCCESS", "Update Successfully");
-        } else {
-            request.setAttribute("ERROR", "Update Fail");
-        }
+    private ArrayList<Car> getDefaultListOfCars() {
+        CarDAO dao = new CarDAO();
+        dao.selectListOfCars();
+        ArrayList<Car> list = dao.getListOfCars();
+
+        return list;
     }
 
-    private boolean isExistCustomer(Long idNumber, String name, long phoneNumber) {
-        if (idNumber == null) {
-            return false;
+    private HashSet<Integer> getListOfyear(ArrayList<Car> cars) {
+        HashSet<Integer> years = new HashSet<>();
+        for (Car car : cars) {
+            Integer year = car.getYear();
+            if (year != null) {
+                years.add(year);
+            }
         }
-        CustomerDAO dao = new CustomerDAO();
-        Long idCheck = dao.selectCustomerID(name, phoneNumber);
+        return years;
+    }
 
-        return idCheck != null && !idCheck.equals(idNumber);
+    private HashSet<String> getListOfColors(ArrayList<Car> cars) {
+        HashSet<String> colors = new HashSet<>();
+        for (Car car : cars) {
+            String color = car.getColour();
+            if (color != null && !color.isEmpty()) {
+                colors.add(color);
+            }
+        }
+        return colors;
     }
 }

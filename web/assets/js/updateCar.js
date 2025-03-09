@@ -3,46 +3,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/JavaScript.js to edit this template
  */
 
-
 document.querySelector('.js-popup-close').addEventListener('click', () => {
-    window.location.href = "ProcessServlet?btnAction=Search";
+    window.location.href = "ProcessServlet?btnAction=Car";
 });
-
-var nameError = document.getElementById('name-error');
-var phoneError = document.getElementById('phone-error');
-function validateName() {
-    var name = document.getElementById('name').value;
-
-    if (name.length == 0) {
-        nameError.innerHTML = 'Name is requierd';
-        return false;
-    }
-    if (!name.match(/^[\p{L}'-]+(\s[\p{L}'-]+)+$/u)) {
-        nameError.innerHTML = 'Write full name';
-        return false;
-    }
-    nameError.innerHTML = '';
-    return true;
-}
-
-function validatePhone() {
-    var phone = document.getElementById('phone').value;
-
-    if (phone.length == 0) {
-        phoneError.innerHTML = "Phone number is required";
-        return false;
-    }
-    if (phone.length < 10 || phone.length > 15) {
-        phoneError.innerHTML = 'Phone number is from 10 to 15 digits';
-        return false;
-    }
-    if (!phone.match(/^[0-9]{10}$/)) {
-        phoneError.innerHTML = 'Phone number is required';
-        return false;
-    }
-    phoneError.innerHTML = '';
-    return true;
-}
 
 class ToastNotificationSystem {
     constructor() {
@@ -179,14 +142,14 @@ document.addEventListener('DOMContentLoaded', () => {
     window.toastSystem = toastSystem;
     const messageHandler = new ServerMessageHandler(toastSystem);
     messageHandler.processMessages();
-    const form = document.getElementById('updateCustomerForm');
+    const form = document.getElementById('updateCarForm');
     const updateButton = form.querySelector('.btn-create');
     
     const confirmationOverlay = document.createElement('div');
     confirmationOverlay.className = 'confirmation-overlay';
     confirmationOverlay.innerHTML = `
         <div class="confirmation-dialog">
-            <p>Are you sure you want to update this customer information?</p>
+            <p>Are you sure you want to update this car information?</p>
             <div class="confirmation-buttons">
                 <button type="button" id="confirm-yes" class="btn btn-yes">Yes</button>
                 <button type="button" id="confirm-no" class="btn btn-no">No</button>

@@ -5,6 +5,7 @@
 
 package controllers;
 
+import dao.CarDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
@@ -23,6 +24,7 @@ import mylib.Validation;
 @WebServlet(name="DeleteCarServlet", urlPatterns={"/DeleteCarServlet"})
 public class DeleteCarServlet extends HttpServlet {
     private final String loginPage = "login.jsp";
+    private final String carPage = "ProcessServlet?btnAction=Car";
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
      * @param request servlet request
@@ -42,20 +44,19 @@ public class DeleteCarServlet extends HttpServlet {
                 response.sendRedirect(loginPage);
                 return;
             }
-            String id = Validation.normalize(request.getParameter("carId"));
-            String serial = Validation.normalize(request.getParameter("carSerial"));
-            String model = Validation.normalize(request.getParameter("carModel"));
-            String year = Validation.normalize(request.getParameter("carYear"));
-            String color = Validation.normalize(request.getParameter("carColor"));
+            String id = Validation.normalize(request.getParameter("id"));
             
-            if(year.isEmpty() || id.isEmpty()){
-                request.getRequestDispatcher("ProcessServlet?btnAction=Search").forward(request, response);
-                return;
-            }else{
+            if(!id.isEmpty()){
                 Long idNumber = Validation.parseLong(id);
-                Integer yearNumber = Validation.parseInt(year);
-                
+                CarDAO dao = new CarDAO();
+                boolean success = dao.deleteCar(idNumber);
+                if(success){
+                    request.setAttribute("SUCCESS", "DELETE SUCCESS");
+                }else{
+                    request.setAttribute("ERROR", "DELETE FAIL");
+                }
             }
+            request.getRequestDispatcher(carPage).forward(request, response);
         }
     } 
 

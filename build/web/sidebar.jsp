@@ -48,7 +48,7 @@
             </span>
             <h3>Invoice</h3>
         </a>
-        <a href="ProcessServlet?btnAction=Report" class="${param.active eq 'report' ? 'active' : ''}">
+        <a href="ProcessServlet?btnAction=Report&id=part" class="${param.active eq 'report' ? 'active' : ''}">
             <span class="material-symbols-outlined">
                 report
             </span>

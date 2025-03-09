@@ -22,7 +22,6 @@ public class SaleInvoiceDAO implements Serializable {
 
     private ArrayList<RevuenueDTO> revenueList;
 
-
     public ArrayList<RevuenueDTO> getRevenueList() {
         return revenueList;
     }
@@ -68,7 +67,7 @@ public class SaleInvoiceDAO implements Serializable {
                         int carSold = table.getInt("cars_sold");
 
                         SalesReportDTO dto = yearlyReports.get(saleYear);
-                        if(dto == null){
+                        if (dto == null) {
                             dto = new SalesReportDTO(saleYear);
                             yearlyReports.put(saleYear, dto);
                         }
@@ -96,46 +95,68 @@ public class SaleInvoiceDAO implements Serializable {
         return new ArrayList<>(yearlyReports.values());
     }
 
-    public void selectRevenueList(long saleID) {
+    public RevuenueDTO selectRevenueList(int yearStart, int yearEnd) {
         Connection cn = null;
         PreparedStatement stm = null;
         ResultSet table = null;
+        RevuenueDTO dto = new RevuenueDTO();
         try {
             cn = DBUtils.getConnection();
             if (cn != null) {
-                String sql = "WITH ServiceRevenue AS (\n"
-                        + "    SELECT st.serviceTicketID,\n"
-                        + "           SUM(sm.hours * sm.rate) as laborCost,\n"
-                        + "           (SELECT COALESCE(SUM(pu.price * pu.numberUsed), 0)\n"
-                        + "            FROM PartsUsed pu\n"
-                        + "            WHERE pu.serviceTicketID = st.serviceTicketID) as partsCost\n"
-                        + "    FROM ServiceTicket st\n"
-                        + "    LEFT JOIN ServiceMehanic sm ON st.serviceTicketID = sm.serviceTicketID\n"
-                        + "    GROUP BY st.serviceTicketID\n"
+                String sql = "WITH YearRange AS (\n"
+                        + "    SELECT CAST(? AS INT) AS year\n"
+                        + "    UNION ALL\n"
+                        + "    SELECT year + 1 FROM YearRange WHERE year < ? \n"
+                        + "),\n"
+                        + "AllMonthsYears AS (\n"
+                        + "    SELECT \n"
+                        + "        m.MonthNumber,\n"
+                        + "        y.year AS YearNumber\n"
+                        + "    FROM \n"
+                        + "        (SELECT 1 AS MonthNumber UNION ALL\n"
+                        + "         SELECT 2 UNION ALL\n"
+                        + "         SELECT 3 UNION ALL\n"
+                        + "         SELECT 4 UNION ALL\n"
+                        + "         SELECT 5 UNION ALL\n"
+                        + "         SELECT 6 UNION ALL\n"
+                        + "         SELECT 7 UNION ALL\n"
+                        + "         SELECT 8 UNION ALL\n"
+                        + "         SELECT 9 UNION ALL\n"
+                        + "         SELECT 10 UNION ALL\n"
+                        + "         SELECT 11 UNION ALL\n"
+                        + "         SELECT 12) AS m\n"
+                        + "    CROSS JOIN YearRange y\n"
                         + ")\n"
-                        + "SELECT YEAR(ST.dateReturned) AS YearRevenue,SUM(SV.laborCost) AS laborCost,SUM(SV.partsCost) AS partsCost\n"
-                        + "FROM SalesInvoice si\n"
-                        + "LEFT JOIN ServiceTicket st ON si.custID = st.custID\n"
-                        + "LEFT JOIN ServiceRevenue sv ON st.serviceTicketID = sv.serviceTicketID\n"
-                        + "WHERE si.salesID = ?  \n"
-                        + "GROUP BY YEAR(ST.dateReturned)";
+                        + "SELECT \n"
+                        + "    my.YearNumber,\n"
+                        + "    my.MonthNumber,\n"
+                        + "\n"
+                        + "    COALESCE(SUM(pu.numberUsed * pu.price),0) AS RevenuePart\n"
+                        + "FROM \n"
+                        + "    AllMonthsYears my\n"
+                        + "    LEFT JOIN ServiceTicket st ON MONTH(st.dateReturned) = my.MonthNumber \n"
+                        + "                              AND YEAR(st.dateReturned) = my.YearNumber\n"
+                        + "    LEFT JOIN PartsUsed pu ON st.serviceTicketID = pu.serviceTicketID\n"
+                        + "    LEFT JOIN ServiceMehanic sm ON st.serviceTicketID = sm.serviceTicketID\n"
+                        + "GROUP BY \n"
+                        + "    my.YearNumber,\n"
+                        + "    my.MonthNumber\n"
+                        + "ORDER BY \n"
+                        + "    my.YearNumber,\n"
+                        + "    my.MonthNumber;";
 
                 stm = cn.prepareStatement(sql);
-                stm.setLong(1, saleID);
-
+                stm.setInt(1, yearStart);
+                stm.setInt(2, yearEnd);
                 table = stm.executeQuery();
                 if (table != null) {
                     while (table.next()) {
-                        int year = table.getInt("YearRevenue");
-                        double laborCost = table.getDouble("laborCost");
-                        double partCost = table.getDouble("partsCost");
+                        int year = table.getInt("YearNumber");
+                        int month = table.getInt("MonthNumber");
+                        double revenue = table.getDouble("RevenuePart");
 
-                        RevuenueDTO dto = new RevuenueDTO(year, laborCost, partCost);
+                        dto.addRevenueEntry(year, month, revenue);
 
-                        if (revenueList == null) {
-                            revenueList = new ArrayList<>();
-                        }
-                        revenueList.add(dto);
                     }
                 }
             }
@@ -156,5 +177,91 @@ public class SaleInvoiceDAO implements Serializable {
                 e.printStackTrace();
             }
         }
+        return dto;
+    }
+
+    public RevuenueDTO selectRevenueListOfService(int yearStart, int yearEnd) {
+        Connection cn = null;
+        PreparedStatement stm = null;
+        ResultSet table = null;
+        RevuenueDTO dto = new RevuenueDTO();
+        try {
+            cn = DBUtils.getConnection();
+            if (cn != null) {
+                String sql = "WITH YearRange AS (\n"
+                        + "    SELECT CAST(? AS INT) AS year\n"
+                        + "    UNION ALL\n"
+                        + "    SELECT year + 1 FROM YearRange WHERE year < ? \n"
+                        + "),\n"
+                        + "AllMonthsYears AS (\n"
+                        + "    SELECT \n"
+                        + "        m.MonthNumber,\n"
+                        + "        y.year AS YearNumber\n"
+                        + "    FROM \n"
+                        + "        (SELECT 1 AS MonthNumber UNION ALL\n"
+                        + "         SELECT 2 UNION ALL\n"
+                        + "         SELECT 3 UNION ALL\n"
+                        + "         SELECT 4 UNION ALL\n"
+                        + "         SELECT 5 UNION ALL\n"
+                        + "         SELECT 6 UNION ALL\n"
+                        + "         SELECT 7 UNION ALL\n"
+                        + "         SELECT 8 UNION ALL\n"
+                        + "         SELECT 9 UNION ALL\n"
+                        + "         SELECT 10 UNION ALL\n"
+                        + "         SELECT 11 UNION ALL\n"
+                        + "         SELECT 12) AS m\n"
+                        + "    CROSS JOIN YearRange y\n"
+                        + ")\n"
+                        + "SELECT \n"
+                        + "    my.YearNumber,\n"
+                        + "    my.MonthNumber,\n"
+                        + "\n"
+                        + "    COALESCE(SUM(sm.hours * sm.rate),0) AS RevenueService\n"
+                        + "FROM \n"
+                        + "    AllMonthsYears my\n"
+                        + "    LEFT JOIN ServiceTicket st ON MONTH(st.dateReturned) = my.MonthNumber \n"
+                        + "                              AND YEAR(st.dateReturned) = my.YearNumber\n"
+                        + "    LEFT JOIN PartsUsed pu ON st.serviceTicketID = pu.serviceTicketID\n"
+                        + "    LEFT JOIN ServiceMehanic sm ON st.serviceTicketID = sm.serviceTicketID\n"
+                        + "GROUP BY \n"
+                        + "    my.YearNumber,\n"
+                        + "    my.MonthNumber\n"
+                        + "ORDER BY \n"
+                        + "    my.YearNumber,\n"
+                        + "    my.MonthNumber;";
+
+                stm = cn.prepareStatement(sql);
+                stm.setInt(1, yearStart);
+                stm.setInt(2, yearEnd);
+                table = stm.executeQuery();
+                if (table != null) {
+                    while (table.next()) {
+                        int year = table.getInt("YearNumber");
+                        int month = table.getInt("MonthNumber");
+                        double revenue = table.getDouble("RevenueService");
+
+                        dto.addRevenueEntry(year, month, revenue);
+
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (table != null) {
+                    table.close();
+                }
+                if (stm != null) {
+                    stm.close();
+                }
+                if (cn != null) {
+                    cn.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return dto;
     }
 }

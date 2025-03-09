@@ -22,6 +22,7 @@ public class CarDAO implements Serializable {
 
     private ArrayList<BestSellerModelReportDTO> bestSellerCarsList;
     private ArrayList<Car> listOfCars;
+    private ArrayList<Long> listOfIds;
 
     public ArrayList<BestSellerModelReportDTO> getBestSellerCarsList() {
         return bestSellerCarsList;
@@ -29,6 +30,10 @@ public class CarDAO implements Serializable {
 
     public ArrayList<Car> getListOfCars() {
         return listOfCars;
+    }
+
+    public ArrayList<Long> getListOfIds() {
+        return listOfIds;
     }
 
     public void selectBestSellerCars(long saleID) {
@@ -180,10 +185,50 @@ public class CarDAO implements Serializable {
         }
     }
 
+    public void selectListOfId() {
+        Connection cn = null;
+        PreparedStatement stm = null;
+        ResultSet table = null;
+        try {
+            cn = DBUtils.getConnection();
+            if (cn != null) {
+                String sql = "SELECT DISTINCT(carID) FROM SalesInvoice";
+                stm = cn.prepareStatement(sql);
+
+                table = stm.executeQuery();
+                if (table != null) {
+                    while (table.next()) {
+                        long id = table.getLong("carID");
+                        if (listOfIds == null) {
+                            listOfIds = new ArrayList<>();
+                        }
+                        listOfIds.add(id);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (table != null) {
+                    table.close();
+                }
+                if (stm != null) {
+                    stm.close();
+                }
+                if (cn != null) {
+                    cn.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public long insertNewCar(String serial, String model, String color, int year) {
         Connection cn = null;
         PreparedStatement stm = null;
-        long carId  = -1;
+        long carId = -1;
         try {
             cn = DBUtils.getConnection();
             if (cn != null) {
@@ -191,16 +236,16 @@ public class CarDAO implements Serializable {
                         + "VALUES (? , ?, ?, ?, ?)";
                 carId = DBUtils.generateUniqueId();
                 stm = cn.prepareStatement(sql);
-                
+
                 stm.setLong(1, carId);
                 stm.setString(2, serial);
                 stm.setString(3, model);
                 stm.setString(4, color);
                 stm.setInt(5, year);
                 int rows = stm.executeUpdate();
-                if(rows == 0){
+                if (rows == 0) {
                     carId = -1;
-                     throw new SQLException("Insert failed, no rows affected.");
+                    throw new SQLException("Insert failed, no rows affected.");
                 }
             }
         } catch (Exception e) {
@@ -219,5 +264,71 @@ public class CarDAO implements Serializable {
             }
         }
         return carId;
+    }
+
+    public boolean deleteCar(long id) {
+        Connection cn = null;
+        PreparedStatement stm = null;
+        boolean success = false;
+        try {
+            cn = DBUtils.getConnection();
+            if (cn != null) {
+                String sql = "DELETE FROM Cars \n"
+                        + "WHERE carID = ? \n"
+                        + "AND NOT EXISTS (\n"
+                        + "    SELECT 1 \n"
+                        + "    FROM SalesInvoice \n"
+                        + "    WHERE SalesInvoice.carID = ?\n"
+                        + ")";
+                stm = cn.prepareStatement(sql);
+
+                stm.setLong(1, id);
+                stm.setLong(2, id);
+                int rows = stm.executeUpdate();
+                success = (rows > 0);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (stm != null) {
+                    stm.close();
+                }
+                if (cn != null) {
+                    cn.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return success;
+    }
+    
+    public boolean updateCar(String id, String colour, String year){
+        Connection cn = null;
+        PreparedStatement stm = null;
+        boolean success = false;
+        try{
+            cn = DBUtils.getConnection();
+            String sql = "UPDATE Cars SET colour = ?, year = ? WHERE carID = ?"; 
+            
+            stm = cn.prepareStatement(sql);
+            stm.setString(1, colour);
+            stm.setString(2, year);
+            stm.setString(3, id);
+            
+            int rows = stm.executeUpdate();
+            if(rows > 0) success = true;
+        }catch(Exception e){
+            e.printStackTrace();
+        }finally{
+            try{
+                if(stm!=null) stm.close();
+                if(cn!=null)cn.close();
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+        }
+        return success;
     }
 }
