@@ -53,7 +53,7 @@ public class CreateCustomerServlet extends HttpServlet {
             String address = Validation.normalize(request.getParameter("address"));
             boolean isValidName = Validation.isValidFullName(fullName);
             boolean isValidPhone = Validation.isValidPhoneNumber(phone);
-            String[] error = new String[3];
+            String[] error = new String[4];
             int errorCount = 0;
             
 
@@ -76,6 +76,14 @@ public class CreateCustomerServlet extends HttpServlet {
                     error[errorCount] = "Please enter the full name";
                     errorCount++;
                 }
+            }
+            if(fullName.isEmpty() && isValidPhone){
+                error[errorCount] = "Please enter the full name";
+                errorCount++;
+            }
+            if(phone.isEmpty() && isValidName){
+                error[errorCount] = "The phone number is from 10 to 15 digits";
+                errorCount++;
             }
             if (errorCount > 0) {
                 request.setAttribute("ERRORS", error);

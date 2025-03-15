@@ -55,7 +55,12 @@ public class UpdateCarServletTwo extends HttpServlet {
             String color = Validation.normalize(request.getParameter("carColor"));
             CarDTO dto = new CarDTO(id, serial, model, year, color);
             if(!year.isEmpty()){
-                updateCar(request, id, color, year);
+                Integer yearNumber = Validation.parseInt(year);
+                if(yearNumber == null){
+                    request.setAttribute("ERROR", "Update Faile");
+                }else{
+                    updateCar(request, id, color, year);
+                }
             }
             
             request.setAttribute("UPDATE", dto);

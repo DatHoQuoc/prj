@@ -6,12 +6,14 @@ package dao;
 
 import java.io.Serializable;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import models.Customer;
+import models.ServiceTicket;
 import mylib.DBUtils;
 
 /**
@@ -124,11 +126,11 @@ public class CustomerDAO implements Serializable {
         long customerID = -1;
         try {
             cn = DBUtils.getConnection();
-            if(cn!=null){
+            if (cn != null) {
                 customerID = DBUtils.generateUniqueId();
-                String insertSQL = "INSERT INTO [Car_Dealership].[dbo].[Customer] " +
-                "([custID], [custName], [phone], [sex], [cusAddress]) " +
-                "VALUES (?, ?, ?, ?, ?)";
+                String insertSQL = "INSERT INTO [Car_Dealership].[dbo].[Customer] "
+                        + "([custID], [custName], [phone], [sex], [cusAddress]) "
+                        + "VALUES (?, ?, ?, ?, ?)";
                 stmInsert = cn.prepareStatement(insertSQL);
                 stmInsert.setLong(1, customerID);
                 stmInsert.setString(2, name);
@@ -142,7 +144,7 @@ public class CustomerDAO implements Serializable {
 
                 }
             }
-     
+
         } catch (Exception e) {
             customerID = -1;
             e.printStackTrace();
@@ -163,38 +165,45 @@ public class CustomerDAO implements Serializable {
         }
         return customerID;
     }
-    
-    public boolean updateCustomer(long id, String name, long phone, String address, String sex){
+
+    public boolean updateCustomer(long id, String name, long phone, String address, String sex) {
         Connection cn = null;
         PreparedStatement stm = null;
         boolean success = false;
-        try{
+        try {
             cn = DBUtils.getConnection();
-            String sql = "UPDATE [Car_Dealership].[dbo].[Customer] \n" +
-"            SET [custName] = ?, [phone] = ?, [sex] = ?, [cusAddress] = ?\n" +
-"           WHERE [custID] = ?"; 
-            
+            String sql = "UPDATE [Car_Dealership].[dbo].[Customer] \n"
+                    + "            SET [custName] = ?, [phone] = ?, [sex] = ?, [cusAddress] = ?\n"
+                    + "           WHERE [custID] = ?";
+
             stm = cn.prepareStatement(sql);
             stm.setString(1, name);
             stm.setLong(2, phone);
             stm.setString(3, sex);
             stm.setString(4, address);
             stm.setLong(5, id);
-            
+
             int rows = stm.executeUpdate();
-            if(rows > 0) success = true;
-        }catch(Exception e){
+            if (rows > 0) {
+                success = true;
+            }
+        } catch (Exception e) {
             e.printStackTrace();
-        }finally{
-            try{
-                if(stm!=null) stm.close();
-                if(cn!=null)cn.close();
-            }catch(Exception e){
+        } finally {
+            try {
+                if (stm != null) {
+                    stm.close();
+                }
+                if (cn != null) {
+                    cn.close();
+                }
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
         return success;
     }
+
     public Long selectCustomerID(String name, long phone) {
         Connection cn = null;
         PreparedStatement stm = null;
@@ -206,7 +215,7 @@ public class CustomerDAO implements Serializable {
                 stm = cn.prepareStatement(sql);
                 stm.setString(1, name);
                 stm.setLong(2, phone);
-               
+
                 table = stm.executeQuery();
                 if (table != null && table.next()) {
                     return table.getLong("custID");
@@ -231,4 +240,53 @@ public class CustomerDAO implements Serializable {
         }
         return null;
     }
+
+    public Customer selectCustomer(long id) {
+        Connection cn = null;
+        PreparedStatement stm = null;
+        ResultSet table = null;
+        try {
+            cn = DBUtils.getConnection();
+            if (cn != null) {
+                String sql = "SELECT [custID]\n"
+                        + "      ,[custName]\n"
+                        + "      ,[phone]\n"
+                        + "      ,[sex]\n"
+                        + "      ,[cusAddress]\n"
+                        + "  FROM [Car_Dealership].[dbo].[Customer]\n"
+                        + "  WHERE [custID] = ? ";
+                stm = cn.prepareStatement(sql);
+                stm.setLong(1, id);
+                table = stm.executeQuery();
+                if (table != null) {
+                    while (table.next()) {
+                        String custName = table.getString("custName");
+                        long phone = table.getLong("phone");
+                        String sex = table.getString("sex");
+                        String custAddress = table.getString("cusAddress");
+
+                        return new Customer(id, custName, phone, sex, custAddress);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (table != null) {
+                    table.close();
+                }
+                if (stm != null) {
+                    stm.close();
+                }
+                if (cn != null) {
+                    cn.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
 }

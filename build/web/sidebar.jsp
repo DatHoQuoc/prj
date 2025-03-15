@@ -30,7 +30,7 @@
             </span>
             <h3>Car</h3>
         </a>
-        <a href="#" class="${param.active eq 'ticket' ? 'active' : ''}">
+        <a href="ProcessServlet?btnAction=Ticket" class="${param.active eq 'ticket' ? 'active' : ''}">
             <span class="material-symbols-outlined">
                 confirmation_number
             </span>

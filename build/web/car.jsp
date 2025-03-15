@@ -17,7 +17,6 @@
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/car.css"/>
     </head>
     <body>
-
         <c:set var="loginpage" value="login.jsp"/>
         <c:if test="${empty sessionScope.SALEPERSON}">
             <c:redirect url="${loginpage}"/>
@@ -126,6 +125,9 @@
                                     <th>Model</th>
                                     <th>Year</th>
                                     <th></th>
+                                        <c:if test="${not empty sessionScope.SERVICETICKETCUSTOMER}">
+                                        <th></th>
+                                        </c:if>
                                 </tr>
                             </thead>
                             <tbody>
@@ -136,6 +138,18 @@
                                         <td>${car.model}</td>
                                         <td>${car.year}</td>
                                         <td class="primary js-popup-details" data-car-detail="${car.carID}">Details</td>
+                                        <c:if test="${not empty sessionScope.SERVICETICKETCUSTOMER}">
+                                            <td>
+                                                <form action="ProcessServlet?btnAction=addCarToServiceTicket" method="post">
+                                                    <input type="hidden" name="carId" value="${car.carID}" />
+                                                   
+                                                        
+                                                        <button type="submit">Add to Ticket</button>
+                                                    
+                                                    
+                                                </form>
+                                            </td>
+                                        </c:if>
                                     </tr>
                                 </c:forEach>
                             </tbody>

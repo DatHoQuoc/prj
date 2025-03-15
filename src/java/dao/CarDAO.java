@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import models.Car;
+import models.Customer;
 import mylib.DBUtils;
 
 /**
@@ -110,8 +111,9 @@ public class CarDAO implements Serializable {
                         String model = table.getString("model");
                         String color = table.getString("colour");
                         int year = table.getInt("year");
+                        String image = table.getString("image");
 
-                        Car car = new Car(id, serial, model, color, year);
+                        Car car = new Car(id, serial, model, color, year, image);
                         if (listOfCars == null) {
                             listOfCars = new ArrayList<>();
                         }
@@ -157,8 +159,9 @@ public class CarDAO implements Serializable {
                         String model = table.getString("model");
                         String color = table.getString("colour");
                         int year = table.getInt("year");
+                        String image = table.getString("image");
 
-                        Car car = new Car(id, serial, model, color, year);
+                        Car car = new Car(id, serial, model, color, year, image);
                         if (listOfCars == null) {
                             listOfCars = new ArrayList<>();
                         }
@@ -232,9 +235,10 @@ public class CarDAO implements Serializable {
         try {
             cn = DBUtils.getConnection();
             if (cn != null) {
-                String sql = "INSERT INTO [Car_Dealership].[dbo].[Cars] ([carID], [serialNumber],[model],[colour],[year])\n"
-                        + "VALUES (? , ?, ?, ?, ?)";
+                String sql = "INSERT INTO [Car_Dealership].[dbo].[Cars] ([carID], [serialNumber],[model],[colour],[year],[image])\n"
+                        + "VALUES (? , ?, ?, ?, ?, ?)";
                 carId = DBUtils.generateUniqueId();
+                String img = "default.webp";
                 stm = cn.prepareStatement(sql);
 
                 stm.setLong(1, carId);
@@ -242,6 +246,7 @@ public class CarDAO implements Serializable {
                 stm.setString(3, model);
                 stm.setString(4, color);
                 stm.setInt(5, year);
+                stm.setString(6, img);
                 int rows = stm.executeUpdate();
                 if (rows == 0) {
                     carId = -1;
@@ -303,32 +308,121 @@ public class CarDAO implements Serializable {
         }
         return success;
     }
-    
-    public boolean updateCar(String id, String colour, String year){
+
+    public boolean updateCar(String id, String colour, String year) {
         Connection cn = null;
         PreparedStatement stm = null;
         boolean success = false;
-        try{
+        try {
             cn = DBUtils.getConnection();
-            String sql = "UPDATE Cars SET colour = ?, year = ? WHERE carID = ?"; 
-            
+            String sql = "UPDATE Cars SET colour = ?, year = ? WHERE carID = ?";
+
             stm = cn.prepareStatement(sql);
             stm.setString(1, colour);
             stm.setString(2, year);
             stm.setString(3, id);
-            
+
             int rows = stm.executeUpdate();
-            if(rows > 0) success = true;
-        }catch(Exception e){
+            if (rows > 0) {
+                success = true;
+            }
+        } catch (Exception e) {
             e.printStackTrace();
-        }finally{
-            try{
-                if(stm!=null) stm.close();
-                if(cn!=null)cn.close();
-            }catch(Exception e){
+        } finally {
+            try {
+                if (stm != null) {
+                    stm.close();
+                }
+                if (cn != null) {
+                    cn.close();
+                }
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
         return success;
+    }
+
+    public boolean updateCarImage(String id, String image) {
+        Connection cn = null;
+        PreparedStatement stm = null;
+        boolean success = false;
+        try {
+            cn = DBUtils.getConnection();
+            String sql = "UPDATE Cars SET image = ?  WHERE carID = ?";
+
+            stm = cn.prepareStatement(sql);
+            stm.setString(1, image);
+            stm.setString(2, id);
+
+            int rows = stm.executeUpdate();
+            if (rows > 0) {
+                success = true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (stm != null) {
+                    stm.close();
+                }
+                if (cn != null) {
+                    cn.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return success;
+    }
+
+    public Car selectCar(long id) {
+        Connection cn = null;
+        PreparedStatement stm = null;
+        ResultSet table = null;
+        try {
+            cn = DBUtils.getConnection();
+            if (cn != null) {
+                String sql = "SELECT [carID]\n"
+                        + "      ,[serialNumber]\n"
+                        + "      ,[model]\n"
+                        + "      ,[colour]\n"
+                        + "      ,[year]\n"
+                        + "      ,[image]\n"
+                        + "  FROM [Car_Dealership].[dbo].[Cars]\n"
+                        + "  WHERE [carID] = ? ";
+                stm = cn.prepareStatement(sql);
+                stm.setLong(1, id);
+                table = stm.executeQuery();
+                if (table != null) {
+                    while (table.next()) {
+                        String serial = table.getString("serialNumber");
+                        String model = table.getString("model");
+                        String color = table.getString("colour");
+                        int year = table.getInt("year");
+                        String image = table.getString("image");
+
+                        return new Car(id, serial, model, color, year, image);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (table != null) {
+                    table.close();
+                }
+                if (stm != null) {
+                    stm.close();
+                }
+                if (cn != null) {
+                    cn.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 }

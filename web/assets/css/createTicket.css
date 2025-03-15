@@ -1,0 +1,302 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Mar 14, 2025, 6:34:36 AM
+    Author     : datho
+*/
+
+:root {
+    /* Colors */
+    --color-primary: #2c3e50;
+    --color-secondary: #3498db;
+    --color-success: #27ae60;
+    --color-warning: #f39c12;
+    --color-danger: #c0392b;
+    --color-light: #ecf0f1;
+    --color-dark: #2c3e50;
+
+    /* Spacing */
+    --spacing-base: 1rem;
+    --spacing-sm: calc(var(--spacing-base) * 0.5);
+    --spacing-md: calc(var(--spacing-base) * 1.5);
+    --spacing-lg: calc(var(--spacing-base) * 2);
+
+    /* Typography */
+    --font-size-base: 1rem;
+    --font-size-lg: 1.25rem;
+    --font-size-xl: 1.5rem;
+    --line-height: 1.6;
+
+    /* Borders */
+    --border-radius: 0.25rem;
+    --border-width: 1px;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.16);
+}
+
+/* Reset and Base Styles */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    line-height: var(--line-height);
+    color: var(--color-dark);
+    background-color: #f8f9fa;
+    padding: var(--spacing-lg);
+}
+
+/* Utility Classes */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+}
+
+/* Header Styles */
+.ticket-header {
+    padding: var(--spacing-md);
+    background: var(--color-primary);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-base);
+}
+
+.ticket-header__title {
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+}
+
+/* Form Section Styles */
+.form-section {
+    padding: var(--spacing-md);
+    border-bottom: var(--border-width) solid var(--color-light);
+}
+
+.form-section:last-child {
+    border-bottom: 0;
+}
+
+.form-section__heading {
+    font-size: var(--font-size-lg);
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-base);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 2px solid var(--color-secondary);
+}
+
+/* Form Grid */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-base);
+}
+
+/* Form Elements */
+.form-group {
+    margin-bottom: var(--spacing-base);
+}
+
+.form-label {
+    display: block;
+    font-weight: 500;
+    color: var(--color-primary);
+    margin-bottom: 0.35rem;
+    font-size: 0.875rem;
+}
+
+.form-control {
+    display: block;
+    width: 100%;
+    padding: 0.75rem;
+    font-size: var(--font-size-base);
+    line-height: 1.5;
+    color: var(--color-dark);
+    background-color: #fff;
+    border: var(--border-width) solid var(--color-light);
+    border-radius: var(--border-radius);
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus {
+    border-color: var(--color-secondary);
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+}
+
+/* Table Styles for Service and Parts */
+.table-responsive {
+    overflow-x: auto;
+    margin: var(--spacing-base) 0;
+}
+
+.service-table,
+.parts-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+.service-table th,
+.service-table td,
+.parts-table th,
+.parts-table td {
+    padding: 1rem;
+    text-align: left;
+    border: var(--border-width) solid var(--color-light);
+}
+
+.service-table th,
+.parts-table th {
+    background: var(--color-light);
+    font-weight: 600;
+    color: var(--color-primary);
+}
+
+.service-table td input,
+.parts-table td input,
+.service-table td select,
+.parts-table td select {
+    width: 100%;
+    padding: 0.5rem;
+    border: var(--border-width) solid var(--color-light);
+    border-radius: var(--border-radius);
+}
+
+/* Row Actions */
+.row-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: none;
+    border: var(--border-width) solid currentColor;
+    color: var(--color-secondary);
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.btn-icon:hover {
+    background-color: var(--color-secondary);
+    color: white;
+}
+
+.btn-icon--delete {
+    color: var(--color-danger);
+}
+
+.btn-icon--delete:hover {
+    background-color: var(--color-danger);
+}
+
+/* Add Row Button */
+.add-row-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    margin-top: 0.5rem;
+    background: none;
+    border: var(--border-width) dashed var(--color-secondary);
+    color: var(--color-secondary);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.add-row-btn:hover {
+    background-color: rgba(52, 152, 219, 0.1);
+}
+
+.add-row-btn::before {
+    content: '+';
+    margin-right: 0.5rem;
+    font-weight: bold;
+}
+
+/* Action Controls */
+.action-bar {
+    display: flex;
+    gap: var(--spacing-base);
+    flex-wrap: wrap;
+    padding: var(--spacing-md);
+    border-top: var(--border-width) solid var(--color-light);
+}
+
+.button {
+    padding: 0.75em 1.5em;
+    border: none;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        transform 0.2s ease,
+        opacity 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+}
+
+.button:active {
+    transform: scale(0.98);
+}
+
+.button--primary {
+    background: var(--color-primary);
+    color: white;
+}
+
+.button--secondary {
+    background: var(--color-secondary);
+    color: white;
+}
+
+.button--danger {
+    background: var(--color-danger);
+    color: white;
+}
+
+.button--success {
+    background: var(--color-success);
+    color: white;
+}
+.info-group__value {
+    padding: 0.5em;
+    background: var(--color-light);
+    border-radius: var(--border-radius);
+    min-height: 2.5rem;
+    display: flex;
+    align-items: center;
+}

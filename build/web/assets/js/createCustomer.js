@@ -8,6 +8,8 @@ document.querySelector('.js-popup-close').addEventListener('click', () => {
 });
 var nameError = document.getElementById('name-error');
 var phoneError = document.getElementById('phone-error');
+var nameError = document.getElementById('name-error');
+var phoneError = document.getElementById('phone-error');
 function validateName() {
     var name = document.getElementById('name').value;
 
@@ -15,7 +17,7 @@ function validateName() {
         nameError.innerHTML = 'Name is requierd';
         return false;
     }
-    if (!name.match(/^[A-Za-z]+(\s[A-Za-z]+)+$/)) {
+    if (!name.match(/^[\p{L}'-]+(\s[\p{L}'-]+)+$/u)) {
         nameError.innerHTML = 'Write full name';
         return false;
     }

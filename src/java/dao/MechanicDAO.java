@@ -23,6 +23,11 @@ import mylib.DBUtils;
 public class MechanicDAO implements Serializable {
 
     private ArrayList<BestMechanicDTO> listOfTop3Mechanic;
+    private ArrayList<Mechanic> listAllMechanic;
+
+    public ArrayList<Mechanic> getListAllMechanic() {
+        return listAllMechanic;
+    }
 
     public ArrayList<BestMechanicDTO> getListTop3OfMechanic() {
         return listOfTop3Mechanic;
@@ -98,24 +103,71 @@ public class MechanicDAO implements Serializable {
                         + "ORDER BY N.TOTAL_HOURS DESC";
                 stm = cn.prepareStatement(sql);
                 stm.setLong(1, saleID);
-                
+
                 table = stm.executeQuery();
-                if(table!=null){
-                    while(table.next()){
+                if (table != null) {
+                    while (table.next()) {
                         long mechanicID = table.getLong("mechanicID");
                         String name = table.getString("mechanicName");
                         int hours = table.getInt("TOTAL_HOURS");
                         double revenue = table.getLong("REVENUE");
                         int totalRepair = table.getInt("TOTAL_REPAIR");
-                        
+
                         BestMechanicDTO dto = new BestMechanicDTO(mechanicID, name, hours, revenue, totalRepair);
-                        if(listOfTop3Mechanic==null){
+                        if (listOfTop3Mechanic == null) {
                             listOfTop3Mechanic = new ArrayList<>();
                         }
                         listOfTop3Mechanic.add(dto);
                     }
                 }
-                
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (table != null) {
+                    table.close();
+                }
+                if (stm != null) {
+                    stm.close();
+                }
+                if (cn != null) {
+                    cn.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void selectAllMechanic() {
+        Connection cn = null;
+        PreparedStatement stm = null;
+        ResultSet table = null;
+        try {
+            cn = DBUtils.getConnection();
+            if (cn != null) {
+                String sql = "SELECT  [mechanicID]\n"
+                        + "      ,[mechanicName]\n"
+                        + "  FROM [Car_Dealership].[dbo].[Mechanic]";
+                stm = cn.prepareStatement(sql);
+              
+
+                table = stm.executeQuery();
+                if (table != null) {
+                    while (table.next()) {
+                        long mechanicID = table.getLong("mechanicID");
+                        String name = table.getString("mechanicName");
+                        
+                        Mechanic m = new Mechanic(mechanicID, name);
+                        if (listAllMechanic == null) {
+                            listAllMechanic = new ArrayList<>();
+                        }
+                        listAllMechanic.add(m);
+                    }
+                }
+
             }
         } catch (Exception e) {
             e.printStackTrace();

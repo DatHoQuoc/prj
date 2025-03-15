@@ -14,17 +14,20 @@ public class Car {
     private String model="";
     private String colour="";
     private int year;
+    String image = "";
+
 
     public Car() {
     
     }
 
-    public Car(long carID, String serialNumber, String model, String colour, int year) {
+    public Car(long carID, String serialNumber, String model, String colour, int year,String image) {
         this.carID = carID;
         this.serialNumber = serialNumber;
         this.model = model;
         this.colour = colour;
         this.year = year;
+        this.image = image;
     }
 
     public long getCarID() {
@@ -67,5 +70,11 @@ public class Car {
         this.year = year;
     }
     
-    
+     public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
 }

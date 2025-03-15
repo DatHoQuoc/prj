@@ -110,12 +110,12 @@ document.querySelectorAll('.custom-select').forEach(select => {
 
         const selected = select.querySelector('.select-selected');
         const field = selected.getAttribute('data-field');
-        const value = selected.getAttribute('data-value'); // Get value from select-selected
+        const value = selected.getAttribute('data-value');
 
         const hiddenInput = document.getElementById(field);
 
         if (hiddenInput) {
-            hiddenInput.value = value; // Use value from select-selected
+            hiddenInput.value = value;
         }
 
         const form = document.getElementById('carSearchForm');
@@ -172,6 +172,7 @@ document.querySelectorAll('.js-popup-details').forEach((button) => {
             }
             upDateButtonListener(matching);
             deleteButtonListener(matching.id);
+            //updateImageButtonListener(matching);
         } else {
             console.log('No matching customer found');
         }
@@ -180,14 +181,18 @@ document.querySelectorAll('.js-popup-details').forEach((button) => {
 
 let carPopup = '';
 function generateHTML(matching) {
-    carPopup = `
-        <div class="modal">
-            <div class="modal-header">
-                <h2>Customer Profile</h2>
-                <button class="close-btn js-popup-close">&times;</button>
+    carPopup = `<div class="modal">
+    <div class="modal-header">
+        <h2>Car Information</h2>
+        <button class="close-btn js-popup-close">&times;</button>
+    </div>
+    
+    <div class="modal-content">
+        <div class="modal-layout">
+            <div class="modal-image">
+                <img src="assets/images/${matching.image}" alt="Product Image" class="product-image">
             </div>
-            
-            <div class="modal-content">
+            <div class="modal-details">
                 <div class="detail-grid">
                     <div class="detail-item">
                         <span class="detail-label">Serial Number</span>
@@ -208,20 +213,32 @@ function generateHTML(matching) {
                         <p class="detail-value">${matching.color}</p>
                     </div>
                 </div>
-    
-                 <div class="modal-actions">
-                    <button class="btn btn-update">
-                        <span class="material-symbols-outlined">edit</span>
-                        Update
-                    </button>
-                    <button class="btn btn-delete">
-                        <span class="material-symbols-outlined">delete</span>
-                        Delete
-                    </button>
-                </div>
             </div>
         </div>
-`;
+
+        <div class="modal-actions">
+            <button class="btn btn-update">
+                <span class="material-symbols-outlined">edit</span>
+                Update
+            </button>
+            <button class="btn btn-delete">
+                <span class="material-symbols-outlined">delete</span>
+                Delete
+            </button>
+        <form action="UpdateCarImageServlet" method="POST" enctype="multipart/form-data">
+            Select image: 
+            <input type="file" name="image" accept="image/*">
+            <input type="hidden" name="carId" value="${matching.id}">
+            <button class="btn btn-update-img">
+                <span class="material-symbols-outlined">update</span>
+                Update image
+            </button>
+        </form>
+        
+            
+        </div>
+    </div>
+</div>`;
 }
 
 const closePopup = () => {
@@ -266,34 +283,46 @@ function handleDeleteClick(id) {
     `;
     document.body.appendChild(confirmationOverlay);
     confirmationOverlay.style.display = 'flex';
-    
+
     console.log(id);
-    document.getElementById('confirm-yes').addEventListener('click',function(){
-        if(carIds.includes(id)){
+    document.getElementById('confirm-yes').addEventListener('click', function () {
+        if (carIds.includes(id)) {
             alert('You can not delete this car due to be sold');
             confirmationOverlay.style.display = 'none';
-        }else{
+        } else {
             window.location.href = `ProcessServlet?btnAction=DeleteCar&id=${id}`;
         }
     });
-    
+
     document.getElementById('confirm-no').addEventListener('click', function () {
         confirmationOverlay.style.display = 'none';
     });
-    
+
 }
-function upDateButtonListener(matching){
+function upDateButtonListener(matching) {
     const updateButton = document.querySelector('.btn-update');
-    if(updateButton){
-        updateButton.addEventListener('click', ()=>{
+    if (updateButton) {
+        updateButton.addEventListener('click', () => {
             handleUpdateClick(matching);
         });
     }
 }
+//function updateImageButtonListener(matching) {
+//    const buttonImage = document.querySelector('.btn-update-img');
+//    if (buttonImage) {
+//        buttonImage.addEventListener('click', () => {
+//            handleUpdateImageClick(matching);
+//        });
+//    }
+//}
 
-function handleUpdateClick(matching){
+//function handleUpdateImageClick(matching) {
+//    window.location.href = `ProcessServlet?btnAction=UpdateImageCar&img=${matching.image}&id=${matching.id}`;
+//}
+
+function handleUpdateClick(matching) {
     const customerData = extractCarData(matching);
-    submitFormWithData('ProcessServlet','UpdateCar',customerData);
+    submitFormWithData('ProcessServlet', 'UpdateCar', customerData);
 }
 function extractCarData(matching) {
     return{
@@ -469,156 +498,158 @@ class ServerMessageHandler {
     }
 }
 
-document.addEventListener('DOMContentLoaded', () =>{
-   const toastSystem = new ToastNotificationSystem();
+document.addEventListener('DOMContentLoaded', () => {
+    const toastSystem = new ToastNotificationSystem();
     window.toastSystem = toastSystem;
     const messageHandler = new ServerMessageHandler(toastSystem);
-    messageHandler.processMessages(); 
+    messageHandler.processMessages();
 });
 
 // Table Pagination Script
-document.addEventListener('DOMContentLoaded', function() {
-  // Configuration
-  const recordsPerPage = 5; // Number of rows per page
-  let currentPage = 1;
-  
-  // Get table elements
-  const tableContainer = document.querySelector('.table-container');
-  const table = tableContainer.querySelector('table');
-  const tbody = table.querySelector('tbody');
-  const rows = tbody.querySelectorAll('tr');
-  const totalRows = rows.length;
-  const totalPages = Math.ceil(totalRows / recordsPerPage);
-  
-  // Create pagination container
-  const paginationContainer = document.createElement('div');
-  paginationContainer.className = 'pagination-container';
-  paginationContainer.style.marginTop = '20px';
-  paginationContainer.style.textAlign = 'center';
-  tableContainer.appendChild(paginationContainer);
-  
-  // Function to show rows for the current page
-  function displayRows() {
-    const start = (currentPage - 1) * recordsPerPage;
-    const end = start + recordsPerPage;
-    
-    // Hide all rows
-    rows.forEach(row => {
-      row.style.display = 'none';
-    });
-    
-    // Show only rows for current page
-    for (let i = start; i < end && i < totalRows; i++) {
-      rows[i].style.display = '';
-    }
-    
-    updatePaginationUI();
-  }
-  
-  // Update pagination UI elements
-  function updatePaginationUI() {
-    // Update active button
-    document.querySelectorAll('.pagination-btn').forEach(btn => {
-      btn.classList.remove('active');
-      btn.style.backgroundColor = '';
-      btn.style.color = '';
-      btn.style.borderColor = '';
-    });
-    
-    const activeBtn = document.querySelector(`.pagination-btn[data-page="${currentPage}"]`);
-    if (activeBtn) {
-      activeBtn.classList.add('active');
-      activeBtn.style.backgroundColor = '#007bff';
-      activeBtn.style.color = 'white';
-      activeBtn.style.borderColor = '#007bff';
-    }
-    
-    // Update prev/next buttons state
-    const prevBtn = document.querySelector('.prev-btn');
-    const nextBtn = document.querySelector('.next-btn');
-    
-    if (prevBtn) prevBtn.disabled = currentPage === 1;
-    if (nextBtn) nextBtn.disabled = currentPage === totalPages;
-    
-    // Update page info
-    const pageInfo = document.querySelector('.page-info');
-    if (pageInfo) {
-      pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
-    }
-  }
-  
-  // Create pagination buttons
-  function setupPagination() {
-    // Clear pagination container
-    paginationContainer.innerHTML = '';
-    
-    // Previous button
-    if (totalPages > 1) {
-      const prevBtn = document.createElement('button');
-      prevBtn.textContent = 'Previous';
-      prevBtn.className = 'pagination-nav-btn prev-btn';
-      prevBtn.style.margin = '0 5px';
-      prevBtn.style.padding = '5px 10px';
-      prevBtn.disabled = currentPage === 1;
-      prevBtn.addEventListener('click', function() {
-        if (currentPage > 1) {
-          currentPage--;
-          displayRows();
+document.addEventListener('DOMContentLoaded', function () {
+    // Configuration
+    const recordsPerPage = 5; // Number of rows per page
+    let currentPage = 1;
+
+    // Get table elements
+    const tableContainer = document.querySelector('.table-container');
+    const table = tableContainer.querySelector('table');
+    const tbody = table.querySelector('tbody');
+    const rows = tbody.querySelectorAll('tr');
+    const totalRows = rows.length;
+    const totalPages = Math.ceil(totalRows / recordsPerPage);
+
+    // Create pagination container
+    const paginationContainer = document.createElement('div');
+    paginationContainer.className = 'pagination-container';
+    paginationContainer.style.marginTop = '20px';
+    paginationContainer.style.textAlign = 'center';
+    tableContainer.appendChild(paginationContainer);
+
+    // Function to show rows for the current page
+    function displayRows() {
+        const start = (currentPage - 1) * recordsPerPage;
+        const end = start + recordsPerPage;
+
+        // Hide all rows
+        rows.forEach(row => {
+            row.style.display = 'none';
+        });
+
+        // Show only rows for current page
+        for (let i = start; i < end && i < totalRows; i++) {
+            rows[i].style.display = '';
         }
-      });
-      paginationContainer.appendChild(prevBtn);
+
+        updatePaginationUI();
     }
-    
-    // Page number buttons
-    for (let i = 1; i <= totalPages; i++) {
-      const btn = document.createElement('button');
-      btn.textContent = i;
-      btn.className = 'pagination-btn';
-      btn.dataset.page = i;
-      btn.style.margin = '0 5px';
-      btn.style.padding = '5px 10px';
-      
-      if (i === currentPage) {
-        btn.classList.add('active');
-        btn.style.backgroundColor = '#007bff';
-        btn.style.color = 'white';
-        btn.style.borderColor = '#007bff';
-      }
-      
-      btn.addEventListener('click', function() {
-        currentPage = parseInt(this.dataset.page);
-        displayRows();
-      });
-      
-      paginationContainer.appendChild(btn);
-    }
-    
-    // Next button
-    if (totalPages > 1) {
-      const nextBtn = document.createElement('button');
-      nextBtn.textContent = 'Next';
-      nextBtn.className = 'pagination-nav-btn next-btn';
-      nextBtn.style.margin = '0 5px';
-      nextBtn.style.padding = '5px 10px';
-      nextBtn.disabled = currentPage === totalPages;
-      nextBtn.addEventListener('click', function() {
-        if (currentPage < totalPages) {
-          currentPage++;
-          displayRows();
+
+    // Update pagination UI elements
+    function updatePaginationUI() {
+        // Update active button
+        document.querySelectorAll('.pagination-btn').forEach(btn => {
+            btn.classList.remove('active');
+            btn.style.backgroundColor = '';
+            btn.style.color = '';
+            btn.style.borderColor = '';
+        });
+
+        const activeBtn = document.querySelector(`.pagination-btn[data-page="${currentPage}"]`);
+        if (activeBtn) {
+            activeBtn.classList.add('active');
+            activeBtn.style.backgroundColor = '#007bff';
+            activeBtn.style.color = 'white';
+            activeBtn.style.borderColor = '#007bff';
         }
-      });
-      paginationContainer.appendChild(nextBtn);
+
+        // Update prev/next buttons state
+        const prevBtn = document.querySelector('.prev-btn');
+        const nextBtn = document.querySelector('.next-btn');
+
+        if (prevBtn)
+            prevBtn.disabled = currentPage === 1;
+        if (nextBtn)
+            nextBtn.disabled = currentPage === totalPages;
+
+        // Update page info
+        const pageInfo = document.querySelector('.page-info');
+        if (pageInfo) {
+            pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+        }
     }
-    
-    // Page info
-    const pageInfo = document.createElement('div');
-    pageInfo.className = 'page-info';
-    pageInfo.style.marginTop = '10px';
-    pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
-    paginationContainer.appendChild(pageInfo);
-  }
-  
-  // Initialize pagination
-  setupPagination();
-  displayRows();
+
+    // Create pagination buttons
+    function setupPagination() {
+        // Clear pagination container
+        paginationContainer.innerHTML = '';
+
+        // Previous button
+        if (totalPages > 1) {
+            const prevBtn = document.createElement('button');
+            prevBtn.textContent = 'Previous';
+            prevBtn.className = 'pagination-nav-btn prev-btn';
+            prevBtn.style.margin = '0 5px';
+            prevBtn.style.padding = '5px 10px';
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.addEventListener('click', function () {
+                if (currentPage > 1) {
+                    currentPage--;
+                    displayRows();
+                }
+            });
+            paginationContainer.appendChild(prevBtn);
+        }
+
+        // Page number buttons
+        for (let i = 1; i <= totalPages; i++) {
+            const btn = document.createElement('button');
+            btn.textContent = i;
+            btn.className = 'pagination-btn';
+            btn.dataset.page = i;
+            btn.style.margin = '0 5px';
+            btn.style.padding = '5px 10px';
+
+            if (i === currentPage) {
+                btn.classList.add('active');
+                btn.style.backgroundColor = '#007bff';
+                btn.style.color = 'white';
+                btn.style.borderColor = '#007bff';
+            }
+
+            btn.addEventListener('click', function () {
+                currentPage = parseInt(this.dataset.page);
+                displayRows();
+            });
+
+            paginationContainer.appendChild(btn);
+        }
+
+        // Next button
+        if (totalPages > 1) {
+            const nextBtn = document.createElement('button');
+            nextBtn.textContent = 'Next';
+            nextBtn.className = 'pagination-nav-btn next-btn';
+            nextBtn.style.margin = '0 5px';
+            nextBtn.style.padding = '5px 10px';
+            nextBtn.disabled = currentPage === totalPages;
+            nextBtn.addEventListener('click', function () {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    displayRows();
+                }
+            });
+            paginationContainer.appendChild(nextBtn);
+        }
+
+        // Page info
+        const pageInfo = document.createElement('div');
+        pageInfo.className = 'page-info';
+        pageInfo.style.marginTop = '10px';
+        pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+        paginationContainer.appendChild(pageInfo);
+    }
+
+    // Initialize pagination
+    setupPagination();
+    displayRows();
 });

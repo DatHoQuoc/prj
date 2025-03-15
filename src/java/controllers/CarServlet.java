@@ -275,7 +275,8 @@ public class CarServlet extends HttpServlet {
                         .add("serialNumber", car.getSerialNumber())
                         .add("model",car.getModel())
                         .add("year",car.getYear())
-                        .add("color",car.getColour());
+                        .add("color",car.getColour())
+                        .add("image", car.getImage());
                 arrayBuilder.add(objectBuilder);
             }
         }

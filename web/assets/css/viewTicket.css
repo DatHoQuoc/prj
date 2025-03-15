@@ -1,0 +1,293 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Mar 11, 2025, 10:19:34 PM
+    Author     : datho
+*/
+
+/* Design System Tokens */
+:root {
+    /* Colors */
+    --color-primary: #2c3e50;
+    --color-secondary: #3498db;
+    --color-success: #27ae60;
+    --color-warning: #f39c12;
+    --color-danger: #c0392b;
+    --color-light: #ecf0f1;
+    --color-dark: #2c3e50;
+
+    /* Spacing */
+    --spacing-base: 1rem;
+    --spacing-sm: calc(var(--spacing-base) * 0.5);
+    --spacing-md: calc(var(--spacing-base) * 1.5);
+    --spacing-lg: calc(var(--spacing-base) * 2);
+
+    /* Typography */
+    --font-size-base: 1rem;
+    --font-size-lg: 1.25rem;
+    --font-size-xl: 1.5rem;
+    --line-height: 1.6;
+
+    /* Borders */
+    --border-radius: 0.25rem;
+    --border-width: 1px;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.16);
+}
+
+/* Reset and Base Styles */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    line-height: var(--line-height);
+    color: var(--color-dark);
+    background-color: #f8f9fa;
+    padding: var(--spacing-lg);
+}
+
+/* Utility Classes */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+}
+
+/* Header Styles */
+.ticket-header {
+    padding: var(--spacing-md);
+    background: var(--color-primary);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-base);
+}
+
+.ticket-header__title {
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+}
+
+/* Status Component */
+.status {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: 0.5em 1em;
+    border-radius: 2em;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.status::before {
+    content: '';
+    display: block;
+    width: 0.75em;
+    height: 0.75em;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.status--in-progress {
+    background: rgba(52, 152, 219, 0.15);
+    color: var(--color-secondary);
+}
+
+/* Information Grid */
+.info-section {
+    padding: var(--spacing-md);
+    border-bottom: var(--border-width) solid var(--color-light);
+}
+
+.info-section:last-child {
+    border-bottom: 0;
+}
+
+.info-section__heading {
+    font-size: var(--font-size-lg);
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-base);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 2px solid var(--color-secondary);
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-base);
+}
+
+.info-group {
+    display: grid;
+    gap: 0.25rem;
+}
+
+.info-group__label {
+    font-weight: 500;
+    color: var(--color-primary);
+    font-size: 0.875rem;
+}
+
+.info-group__value {
+    padding: 0.5em;
+    background: var(--color-light);
+    border-radius: var(--border-radius);
+    min-height: 2.5rem;
+    display: flex;
+    align-items: center;
+}
+
+/* Table Styles */
+.table-responsive {
+    overflow-x: auto;
+    margin: var(--spacing-base) 0;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+.data-table th,
+.data-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: var(--border-width) solid var(--color-light);
+}
+
+.data-table th {
+    background: var(--color-light);
+    font-weight: 600;
+    color: var(--color-primary);
+}
+
+/* Totals Section */
+.totals {
+    display: grid;
+    gap: 0.75rem;
+    padding: var(--spacing-base) 0;
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+}
+
+.total-row--grand {
+    border-top: 2px solid var(--color-light);
+    padding-top: var(--spacing-base);
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--color-primary);
+}
+
+/* Action Controls */
+.action-bar {
+    display: flex;
+    gap: var(--spacing-base);
+    flex-wrap: wrap;
+    padding: var(--spacing-md) 0;
+    border-top: var(--border-width) solid var(--color-light);
+    margin-top: var(--spacing-md);
+}
+
+.button {
+    padding: 0.75em 1.5em;
+    border: none;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        transform 0.2s ease,
+        opacity 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+}
+
+.button:active {
+    transform: scale(0.98);
+}
+
+.button--primary {
+    background: var(--color-primary);
+    color: white;
+}
+
+.button--secondary {
+    background: var(--color-secondary);
+    color: white;
+}
+
+.button--success {
+    background: var(--color-success);
+    color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    body {
+        padding: var(--spacing-base);
+    }
+
+    .ticket-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .action-bar {
+        flex-direction: column;
+    }
+
+    .button {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media print {
+    body {
+        padding: 0;
+        background: white;
+    }
+
+    .container {
+        box-shadow: none;
+        border-radius: 0;
+    }
+
+    .action-bar {
+        display: none;
+    }
+}
